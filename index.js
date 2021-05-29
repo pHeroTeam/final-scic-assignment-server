@@ -26,6 +26,7 @@ const uri = `mongodb://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0-sh
 MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true },function(err, client) {
     const collection = client.db("TeamWork").collection("TeamCollection");
     const orderCollection = client.db("TeamWork").collection("order");
+    const adminCollection = client.db("TeamWork").collection("admin");
 
     console.log("database connected successfully");
 
@@ -39,12 +40,34 @@ MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true },fun
         })
     })
 
+    // all place success ful order
+    app.post('/allSuccessOrders', (req, res)=>{
+        const successOrder=req.body;
+        console.log(successOrder);
+        orderCollection.insertOne(successOrder)
+        .then(result=>{
+        console.log(result);
+        res.send(result.insertedCount>0)
+        })
+    })
+ 
     //data show in ui
     app.get('/showAllFoodAddClientSite',(req,res)=>{
         collection.find({})
         .toArray((err,documents)=>{
         console.log(documents);
         res.send(documents)
+        })
+    })
+
+    //admin check
+    app.get('/checkAdmin',(req,res)=>{
+        const email=req.query.email;
+        console.log(email)
+        adminCollection.find({email:email})
+        .toArray((err,admin)=>{
+        console.log(admin);
+        res.send(admin.length>0)
         })
     })
 
@@ -60,6 +83,14 @@ MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true },fun
         })
     })
 
+    //manage food show in ui
+    app.get('/manageFoodShowUi',(req,res)=>{
+        collection.find({})
+        .toArray((err,documents)=>{
+        console.log(documents);
+        res.send(documents)
+        })
+    })
     // delete food
     app.delete('/delete/:id',(req,res)=>{
         collection.deleteOne({_id:ObjectId(req.params.id)})
@@ -67,8 +98,26 @@ MongoClient.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true },fun
         console.log(result);
         res.send(result.deletedCount>0)
         })
-    })
+    });
 
+    app.get('/orderDetailShow',(req,res)=>{
+        const email=req.query.email;
+        adminCollection.find({email:email})
+        .toArray((err,admin)=>{
+        if (admin.length===0) {
+            orderCollection.find({email:email})
+            .toArray((err,documents)=>{
+                res.send(documents);
+            })
+        }
+        else if(admin.length>0){
+            orderCollection.find({})
+            .toArray((err,documents)=>{
+                res.send(documents);
+            })
+        }
+        })
+})
 
 });
 
