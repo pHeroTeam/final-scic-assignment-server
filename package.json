@@ -1,0 +1,21 @@
+{
+  "name": "taste-of-bangladesh-server",
+  "version": "1.0.0",
+  "description": "Food Server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "food",
+    "service",
+    "order",
+    "buy",
+    "book",
+    "eat",
+    "fresh",
+    "restaurant"
+  ],
+  "author": "pHeroTeam63",
+  "license": "ISC"
+}
